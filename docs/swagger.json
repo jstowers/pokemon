@@ -1,0 +1,376 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "REST API for browsing and favoriting Generation I Pokemon.",
+        "title": "Pokemon API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/favorites": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "List favorite Pokemon",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Results per page, max 100 (default 20)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "Add a Pokemon to favorites",
+                "parameters": [
+                    {
+                        "description": "Pokemon to favorite",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.AddFavoriteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Missing or invalid pokemonId",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Pokemon not found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Already a favorite",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/favorites/{id}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "favorites"
+                ],
+                "summary": "Remove a Pokemon from favorites",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pokemon ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not a favorite",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pokemons": {
+            "get": {
+                "description": "Returns a paginated list of Pokemon. Supports filtering by name (partial match) and type.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pokemon"
+                ],
+                "summary": "List Pokemon",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by name (partial, case-insensitive)",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by type (e.g. Fire, Water)",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number (default 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Results per page, max 100 (default 20)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pokemons/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "pokemon"
+                ],
+                "summary": "Get a Pokemon by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Pokemon ID (e.g. 001)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.PokemonResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "handler.AddFavoriteRequest": {
+            "type": "object",
+            "properties": {
+                "pokemonId": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.AttackResponse": {
+            "type": "object",
+            "properties": {
+                "damage": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.AttacksResponse": {
+            "type": "object",
+            "properties": {
+                "fast": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.AttackResponse"
+                    }
+                },
+                "special": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.AttackResponse"
+                    }
+                }
+            }
+        },
+        "handler.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.EvolutionReqResp": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.EvolutionResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.ListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.PokemonResponse"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "totalPages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handler.PokemonResponse": {
+            "type": "object",
+            "properties": {
+                "attacks": {
+                    "$ref": "#/definitions/handler.AttacksResponse"
+                },
+                "classification": {
+                    "type": "string"
+                },
+                "evolutionRequirements": {
+                    "$ref": "#/definitions/handler.EvolutionReqResp"
+                },
+                "evolutions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.EvolutionResponse"
+                    }
+                },
+                "fleeRate": {
+                    "type": "number"
+                },
+                "height": {
+                    "$ref": "#/definitions/handler.RangeResponse"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "maxCP": {
+                    "type": "integer"
+                },
+                "maxHP": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pokemonClass": {
+                    "type": "string"
+                },
+                "previousEvolutions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handler.EvolutionResponse"
+                    }
+                },
+                "resistant": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "types": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "weaknesses": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "weight": {
+                    "$ref": "#/definitions/handler.RangeResponse"
+                }
+            }
+        },
+        "handler.RangeResponse": {
+            "type": "object",
+            "properties": {
+                "maximum": {
+                    "type": "string"
+                },
+                "minimum": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

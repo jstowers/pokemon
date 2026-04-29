@@ -1,0 +1,245 @@
+basePath: /
+definitions:
+  handler.AddFavoriteRequest:
+    properties:
+      pokemonId:
+        type: string
+    type: object
+  handler.AttackResponse:
+    properties:
+      damage:
+        type: integer
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  handler.AttacksResponse:
+    properties:
+      fast:
+        items:
+          $ref: '#/definitions/handler.AttackResponse'
+        type: array
+      special:
+        items:
+          $ref: '#/definitions/handler.AttackResponse'
+        type: array
+    type: object
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  handler.EvolutionReqResp:
+    properties:
+      amount:
+        type: integer
+      name:
+        type: string
+    type: object
+  handler.EvolutionResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  handler.ListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handler.PokemonResponse'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  handler.PokemonResponse:
+    properties:
+      attacks:
+        $ref: '#/definitions/handler.AttacksResponse'
+      classification:
+        type: string
+      evolutionRequirements:
+        $ref: '#/definitions/handler.EvolutionReqResp'
+      evolutions:
+        items:
+          $ref: '#/definitions/handler.EvolutionResponse'
+        type: array
+      fleeRate:
+        type: number
+      height:
+        $ref: '#/definitions/handler.RangeResponse'
+      id:
+        type: string
+      maxCP:
+        type: integer
+      maxHP:
+        type: integer
+      name:
+        type: string
+      pokemonClass:
+        type: string
+      previousEvolutions:
+        items:
+          $ref: '#/definitions/handler.EvolutionResponse'
+        type: array
+      resistant:
+        items:
+          type: string
+        type: array
+      types:
+        items:
+          type: string
+        type: array
+      weaknesses:
+        items:
+          type: string
+        type: array
+      weight:
+        $ref: '#/definitions/handler.RangeResponse'
+    type: object
+  handler.RangeResponse:
+    properties:
+      maximum:
+        type: string
+      minimum:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API for browsing and favoriting Generation I Pokemon.
+  title: Pokemon API
+  version: "1.0"
+paths:
+  /favorites:
+    get:
+      parameters:
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Results per page, max 100 (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ListResponse'
+      summary: List favorite Pokemon
+      tags:
+      - favorites
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pokemon to favorite
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.AddFavoriteRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Missing or invalid pokemonId
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Pokemon not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "409":
+          description: Already a favorite
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Add a Pokemon to favorites
+      tags:
+      - favorites
+  /favorites/{id}:
+    delete:
+      parameters:
+      - description: Pokemon ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not a favorite
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Remove a Pokemon from favorites
+      tags:
+      - favorites
+  /pokemons:
+    get:
+      description: Returns a paginated list of Pokemon. Supports filtering by name
+        (partial match) and type.
+      parameters:
+      - description: Filter by name (partial, case-insensitive)
+        in: query
+        name: name
+        type: string
+      - description: Filter by type (e.g. Fire, Water)
+        in: query
+        name: type
+        type: string
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Results per page, max 100 (default 20)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ListResponse'
+      summary: List Pokemon
+      tags:
+      - pokemon
+  /pokemons/{id}:
+    get:
+      parameters:
+      - description: Pokemon ID (e.g. 001)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.PokemonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get a Pokemon by ID
+      tags:
+      - pokemon
+swagger: "2.0"

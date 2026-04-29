@@ -1,0 +1,6 @@
+# .gitignore
+# folders and files ignored and not committed to GitHub
+# last updated: Wednesday, April 29, 2026
+
+# macOS folder metadata
+.DS_Store
