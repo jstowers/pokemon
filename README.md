@@ -59,45 +59,51 @@ If you have Homebrew installed on your machine:
 
 ## Build and Run
 
-### 1. Create the database
+### 1. Create the Database
 
 ```bash
 createdb pokemon
 ```
 
-### 2. Seed the database
+### 2. Configure the Environment
 
-Reads `data/pokemons.json`, creates all tables, and inserts all 151 Pokemon in a single transaction.
+The application reads its configuration from a `.env.dev` file in the project root:
 
-```bash
-DB_USER=$USER DB_PASSWORD="" go run ./cmd/seed
+```text
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=
+DB_PASSWORD=
+DB_NAME=pokemon
+DB_SSLMODE=disable
+ADDR=:8080
 ```
 
-`DB_USER=$USER` uses your macOS username, which is the default superuser created by both Postgres.app and Homebrew. If your PostgreSQL setup uses a different username or password, set those values explicitly:
+Copy the example file `.env.example` to `.env.dev`:
 
 ```bash
-DB_USER=myuser DB_PASSWORD=mypassword go run ./cmd/seed
+cp .env.example .env.dev
 ```
 
-### 3. Start the API
+Open `.env.dev` and set your PostgreSQL credentials for `DB_USER` and `DB_PASSWORD`. With Postgres.app or Homebrew, the default `DB_USER` is your macOS username and `DB_PASSWORD` can be left empty.
+
+### 3. Seed the Database
+
+Read `data/pokemons.json`, create all tables, and insert all 151 Pokemon in a single transaction:
 
 ```bash
-DB_USER=$USER DB_PASSWORD="" go run ./cmd/api
+go run ./cmd/seed
 ```
 
-The server starts on port 8080 by default.
+### 4. Start the API Server
 
-## Environment Variables
+```bash
+go run ./cmd/api
+```
 
-| Variable | Default | Description |
-|---|---|---|
-| `DB_HOST` | `localhost` | PostgreSQL host |
-| `DB_PORT` | `5432` | PostgreSQL port |
-| `DB_USER` | `postgres` | PostgreSQL user |
-| `DB_PASSWORD` | _(empty)_ | PostgreSQL password |
-| `DB_NAME` | `pokemon` | Database name |
-| `DB_SSLMODE` | `disable` | SSL mode |
-| `ADDR` | `:8080` | HTTP listen address |
+### 5. Open Swagger API
+
+In a browser, open the following URL: http://localhost:8080/swagger/index.html
 
 ## API Endpoints
 
@@ -115,13 +121,13 @@ The server starts on port 8080 by default.
 ### Example Requests
 
 ```bash
-# Get Bulbasaur
+# Get Bulbasaur (id 001)
 curl http://localhost:8080/pokemons/001
 
-# Search by name
+# Search by name "char"
 curl "http://localhost:8080/pokemons?name=char"
 
-# Filter by type
+# Filter by type "Fire"
 curl "http://localhost:8080/pokemons?type=Fire"
 
 # Add a favorite

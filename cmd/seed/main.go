@@ -7,21 +7,25 @@ import (
 	"log"
 	"os"
 
+	"github.com/jstowers/pokemon/internal/config"
 	"github.com/jstowers/pokemon/internal/db"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	cfg := db.Config{
-		Host:     getenv("DB_HOST", "localhost"),
-		Port:     getenv("DB_PORT", "5432"),
-		User:     getenv("DB_USER", "postgres"),
-		Password: getenv("DB_PASSWORD", ""),
-		DBName:   getenv("DB_NAME", "pokemon"),
-		SSLMode:  getenv("DB_SSLMODE", "disable"),
+	cfg, err := config.Load(".env.dev")
+	if err != nil {
+		log.Fatalf("load config: %v", err)
 	}
 
-	database, err := db.Open(cfg)
+	database, err := db.Open(db.Config{
+		Host:     cfg.DBHost,
+		Port:     cfg.DBPort,
+		User:     cfg.DBUser,
+		Password: cfg.DBPassword,
+		DBName:   cfg.DBName,
+		SSLMode:  cfg.DBSSLMode,
+	})
 	if err != nil {
 		log.Fatalf("open db: %v", err)
 	}
@@ -31,7 +35,10 @@ func main() {
 		log.Fatalf("migrate: %v", err)
 	}
 
-	path := getenv("SEED_FILE", "data/pokemons.json")
+	path := os.Getenv("SEED_FILE")
+	if path == "" {
+		path = "data/pokemons.json"
+	}
 	f, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("open seed file: %v", err)
@@ -196,13 +203,6 @@ func containsStr(s, sub string) bool {
 		}
 	}
 	return false
-}
-
-func getenv(key, fallback string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return fallback
 }
 
 // ---- raw JSON types (match the shape of pokemons.json) ---------------------

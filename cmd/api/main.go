@@ -10,9 +10,9 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	_ "github.com/jstowers/pokemon/docs"
+	"github.com/jstowers/pokemon/internal/config"
 	"github.com/jstowers/pokemon/internal/db"
 	"github.com/jstowers/pokemon/internal/handler"
 	"github.com/jstowers/pokemon/internal/pokemon"
@@ -21,16 +21,19 @@ import (
 )
 
 func main() {
-	cfg := db.Config{
-		Host:     getenv("DB_HOST", "localhost"),
-		Port:     getenv("DB_PORT", "5432"),
-		User:     getenv("DB_USER", "postgres"),
-		Password: getenv("DB_PASSWORD", ""),
-		DBName:   getenv("DB_NAME", "pokemon"),
-		SSLMode:  getenv("DB_SSLMODE", "disable"),
+	cfg, err := config.Load(".env.dev")
+	if err != nil {
+		log.Fatalf("load config: %v", err)
 	}
 
-	database, err := db.Open(cfg)
+	database, err := db.Open(db.Config{
+		Host:     cfg.DBHost,
+		Port:     cfg.DBPort,
+		User:     cfg.DBUser,
+		Password: cfg.DBPassword,
+		DBName:   cfg.DBName,
+		SSLMode:  cfg.DBSSLMode,
+	})
 	if err != nil {
 		log.Fatalf("open db: %v", err)
 	}
@@ -48,17 +51,9 @@ func main() {
 	handler.RegisterRoutes(mux, h)
 	mux.HandleFunc("GET /swagger/", httpSwagger.WrapHandler)
 
-	addr := getenv("ADDR", ":8080")
-	log.Printf("server listening on %s", addr)
-	log.Printf("swagger UI available at http://%s/swagger/index.html", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	log.Printf("server listening on %s", cfg.Addr)
+	log.Printf("swagger UI available at http://localhost%s/swagger/index.html", cfg.Addr)
+	if err := http.ListenAndServe(cfg.Addr, mux); err != nil {
 		log.Fatalf("listen: %v", err)
 	}
-}
-
-func getenv(key, fallback string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return fallback
 }

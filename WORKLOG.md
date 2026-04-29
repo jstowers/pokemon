@@ -19,3 +19,11 @@
 - Generate Swagger.
 
 - Write unit tests.
+
+10:45 - 11:30 am CDT (45 minutes)
+
+- Add `.env.dev` file and implement Config object
+
+- Update README with emphasis on Prerequisites and Build and Run instructions
+
+- Claude session breakdown · sonnet: 100% · haiku: 0% · cache hit: 98%

@@ -4,3 +4,6 @@
 
 # macOS folder metadata
 .DS_Store
+
+# environment variables
+.env.dev
