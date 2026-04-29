@@ -17,10 +17,47 @@ The domain defines what it needs via the `Repository` interface. The infrastruct
 
 ## Prerequisites
 
-- [Go 1.24+](https://go.dev/dl/)
-- [Postgres.app](https://postgresapp.com) (or any PostgreSQL 14+ instance)
+### 1. Clone the repository
 
-## Setup
+In a folder of your choosing, run the following commands to clone this repo:
+
+```bash
+git clone https://github.com/jstowers/pokemon.git
+cd pokemon
+```
+
+### 2. Install Go
+
+Download and install [Go 1.24+](https://go.dev/dl/).
+
+### 3. Install PostgreSQL
+
+**Option A — Postgres.app (macOS, recommended)**
+
+1. Download and install [Postgres.app](https://postgresapp.com). Open the app, click **Initialize**, then **Start**.
+
+2. Add the CLI tools to your PATH so that `createdb` and `psql` are available in the terminal:
+
+    ```bash
+    sudo mkdir -p /etc/paths.d
+    ```
+
+    ```bash
+    echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
+    ```
+
+3. Open a new terminal window for the PATH change to take effect.
+
+**Option B — Homebrew**
+
+If you have Homebrew installed on your machine:
+
+  ```bash
+  brew install postgresql@17
+  brew services start postgresql@17
+  ```
+
+## Build and Run
 
 ### 1. Create the database
 
@@ -30,10 +67,16 @@ createdb pokemon
 
 ### 2. Seed the database
 
-Reads `data/pokemons.json` and creates all tables and inserts all 151 Pokemon in a single transaction.
+Reads `data/pokemons.json`, creates all tables, and inserts all 151 Pokemon in a single transaction.
 
 ```bash
 DB_USER=$USER DB_PASSWORD="" go run ./cmd/seed
+```
+
+`DB_USER=$USER` uses your macOS username, which is the default superuser created by both Postgres.app and Homebrew. If your PostgreSQL setup uses a different username or password, set those values explicitly:
+
+```bash
+DB_USER=myuser DB_PASSWORD=mypassword go run ./cmd/seed
 ```
 
 ### 3. Start the API
@@ -121,3 +164,11 @@ go test ./internal/handler/... -run TestAddFavorite_AlreadyFavorite -v
 ```
 
 Tests cover the service (business logic) and handler (HTTP) layers using a mock repository — no database required to run the test suite.
+
+## Initial Commit
+
+Wednesday, April 29, 2026
+
+## Last Revision
+
+Wednesday, April 29, 2026
