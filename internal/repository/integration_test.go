@@ -316,6 +316,38 @@ func TestListFavorites(t *testing.T) {
 	}
 }
 
+func TestRemoveFavorite_Middle(t *testing.T) {
+	cleanFavorites(t)
+
+	// Add all three fixture Pokemon as favorites.
+	for _, id := range []string{"001", "004", "025"} {
+		if err := testRepo.AddFavorite(context.Background(), id); err != nil {
+			t.Fatalf("AddFavorite %s: %v", id, err)
+		}
+	}
+
+	// Remove the middle one.
+	if err := testRepo.RemoveFavorite(context.Background(), "004"); err != nil {
+		t.Fatalf("RemoveFavorite 004: %v", err)
+	}
+
+	// The removed Pokemon should no longer be a favorite.
+	if isFav, err := testRepo.IsFavorite(context.Background(), "004"); err != nil {
+		t.Fatalf("IsFavorite 004: %v", err)
+	} else if isFav {
+		t.Error("004 should not be a favorite after removal")
+	}
+
+	// The other two should still be favorites.
+	for _, id := range []string{"001", "025"} {
+		if isFav, err := testRepo.IsFavorite(context.Background(), id); err != nil {
+			t.Fatalf("IsFavorite %s: %v", id, err)
+		} else if !isFav {
+			t.Errorf("%s should still be a favorite", id)
+		}
+	}
+}
+
 func TestCountFavorites(t *testing.T) {
 	cleanFavorites(t)
 
