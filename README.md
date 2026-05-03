@@ -17,23 +17,13 @@ The domain defines what it needs via the `Repository` interface. The infrastruct
 
 ## Prerequisites
 
-### 1. Clone the repository
-
-In a folder of your choosing, run the following command to clone this repo:
-
-```bash
-git clone https://github.com/jstowers/pokemon.git
-```
-
-```
-cd pokemon
-```
-
-### 2. Install Go
+### 1. Install Go
 
 Download and install [Go 1.24+](https://go.dev/dl/).
 
-### 3. Install PostgreSQL
+### 2. Install PostgreSQL
+
+You need a local PostgreSQL database to test the API.  You have two installation options:
 
 **Option A — Postgres.app (macOS, recommended)**
 
@@ -53,22 +43,35 @@ Download and install [Go 1.24+](https://go.dev/dl/).
 
 **Option B — Homebrew**
 
-If you have Homebrew installed on your machine:
+If you have [Homebrew](https://brew.sh) installed on your machine:
 
   ```bash
   brew install postgresql@17
   brew services start postgresql@17
   ```
 
+### 3. Clone the repository
+
+In a folder of your choosing, run the following command to clone this repo:
+
+```bash
+git clone https://github.com/jstowers/pokemon.git
+```
+
+```
+cd pokemon
+```
+
+
 ## Build and Run
 
-### 1. Create the Database
+### 1. Create the database
 
 ```bash
 createdb pokemon
 ```
 
-### 2. Configure the Environment
+### 2. Configure the environment
 
 The application reads its configuration from a `.env.dev` file in the project root:
 
@@ -90,7 +93,7 @@ cp .env.example .env.dev
 
 Open `.env.dev` and set your PostgreSQL credentials for `DB_USER` and `DB_PASSWORD`. With Postgres.app or Homebrew, the default `DB_USER` is your macOS username and `DB_PASSWORD` can be left empty.
 
-### 3. Seed the Database
+### 3. Seed the database
 
 Read `data/pokemons.json`, create all tables, and insert all 151 Pokemon in a single transaction:
 
@@ -98,7 +101,7 @@ Read `data/pokemons.json`, create all tables, and insert all 151 Pokemon in a si
 go run ./cmd/seed
 ```
 
-### 4. Start the API Server
+### 4. Start the API server
 
 ```bash
 go run ./cmd/api
@@ -184,23 +187,23 @@ The suite runs all tests and then truncates the fixture data, so each run starts
 
 1. Create the local test database once:
 
-```bash
-createdb pokemon_test
-```
+    ```bash
+    createdb pokemon_test
+    ```
 
 1. Run the integration tests:
 
-```bash
-go test ./internal/repository/... -tags integration
-```
+    ```bash
+    go test ./internal/repository/... -tags integration
+    ```
 
 By default, the tests connect to `localhost:5432` with your macOS username and no password (matching Postgres.app defaults). 
 
 Override any value with `TEST_DB_*` environment variables:
 
-```bash
-TEST_DB_USER=myuser TEST_DB_PASSWORD=secret go test ./internal/repository/... -tags integration
-```
+  ```bash
+  TEST_DB_USER=myuser TEST_DB_PASSWORD=secret go test ./internal/repository/... -tags integration
+  ```
 
 ## Initial Commit
 
