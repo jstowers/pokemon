@@ -27,3 +27,11 @@
 - Update README with emphasis on Prerequisites and Build and Run instructions
 
 - Claude session breakdown · sonnet: 100% · haiku: 0% · cache hit: 98%
+
+## Sunday, May 3, 2026
+
+6:30 - 7:00 am CDT (30 minutes)
+
+- Test API
+
+- Begin Claude prompts for adding integration tests against a local Pokemon database.

@@ -1,6 +1,6 @@
 # Pokemon API
 
-A REST API for browsing and favoriting Generation I Pokemon, built with Go and PostgreSQL.
+A REST API for browsing Generation I Pokemon and adding favorites, built with Go and PostgreSQL.
 
 ## Technology Choices
 
@@ -19,10 +19,13 @@ The domain defines what it needs via the `Repository` interface. The infrastruct
 
 ### 1. Clone the repository
 
-In a folder of your choosing, run the following commands to clone this repo:
+In a folder of your choosing, run the following command to clone this repo:
 
 ```bash
 git clone https://github.com/jstowers/pokemon.git
+```
+
+```
 cd pokemon
 ```
 
@@ -158,8 +161,10 @@ swag init -g cmd/api/main.go --output docs
 
 ## Running Tests
 
+### Unit tests (no database required)
+
 ```bash
-# All tests
+# All unit tests
 go test ./...
 
 # A specific package
@@ -169,7 +174,33 @@ go test ./internal/pokemon/...
 go test ./internal/handler/... -run TestAddFavorite_AlreadyFavorite -v
 ```
 
-Tests cover the service (business logic) and handler (HTTP) layers using a mock repository — no database required to run the test suite.
+Unit tests cover the service (business logic) and handler (HTTP) layers using a mock repository.
+
+### Integration Tests
+
+The test suite seeds a small set of fixture Pokemon into a local `pokemon_test` database.
+
+The suite runs all tests and then truncates the fixture data, so each run starts from a clean state.
+
+1. Create the local test database once:
+
+```bash
+createdb pokemon_test
+```
+
+1. Run the integration tests:
+
+```bash
+go test ./internal/repository/... -tags integration
+```
+
+By default, the tests connect to `localhost:5432` with your macOS username and no password (matching Postgres.app defaults). 
+
+Override any value with `TEST_DB_*` environment variables:
+
+```bash
+TEST_DB_USER=myuser TEST_DB_PASSWORD=secret go test ./internal/repository/... -tags integration
+```
 
 ## Initial Commit
 
@@ -177,4 +208,4 @@ Wednesday, April 29, 2026
 
 ## Last Revision
 
-Wednesday, April 29, 2026
+Sunday, May 3, 2026
