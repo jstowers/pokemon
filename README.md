@@ -165,6 +165,7 @@ In a browser, open the following URL: http://localhost:8080/swagger/index.html
 | GET | `/pokemons/{id}` | Get a Pokemon by ID (e.g. `001`) |
 | GET | `/pokemons` | List Pokemon (paginated) |
 | GET | `/pokemons?name=char` | Filter by name (partial, case-insensitive) |
+| GET | `/pokemons?type=Fire` | Filter by type |
 | GET | `/pokemons?heightMin=0.5&heightMax=2.0` | Filter by height range (m) |
 | GET | `/pokemons?page=2&limit=10` | Pagination controls |
 | POST | `/favorites` | Add a Pokemon to favorites |
