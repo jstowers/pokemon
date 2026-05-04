@@ -123,7 +123,7 @@ The application reads its configuration from a `.env.dev` file in the project ro
 ```text
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=
+DB_USER=your-macos-username
 DB_PASSWORD=
 DB_NAME=pokemon
 DB_SSLMODE=disable
@@ -136,7 +136,9 @@ Copy the example file `.env.example` to `.env.dev`:
 cp .env.example .env.dev
 ```
 
-Open `.env.dev` and set your PostgreSQL credentials for `DB_USER` and `DB_PASSWORD`. With Postgres.app or Homebrew, the default `DB_USER` is your macOS username and `DB_PASSWORD` can be left empty.
+Open `.env.dev` and set the PostgreSQL credentials `DB_USER` and `DB_PASSWORD`. 
+
+With Postgres.app or Homebrew, the default `DB_USER` is your macOS username (run `whoami` in the terminal to see it) and `DB_PASSWORD` can be left empty.
 
 ### 3. Seed the database
 
