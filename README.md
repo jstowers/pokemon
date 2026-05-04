@@ -174,7 +174,7 @@ In a browser, open the following URL: http://localhost:8080/swagger/index.html
 
 ### Filter Parameters
 
-The `pokemons/` endpoint supports flexible filtering with optional, combinable query parameters.
+The `/pokemons` endpoint supports flexible filtering with optional, combinable query parameters.
 
 | Parameter | Type | Description |
 |---|---|---|
