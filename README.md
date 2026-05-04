@@ -152,7 +152,7 @@ go run ./cmd/seed
 go run ./cmd/api
 ```
 
-### 5. Open Swagger API
+### 5. Open Swagger UI
 
 In a browser, open the following URL: http://localhost:8080/swagger/index.html
 
@@ -307,13 +307,13 @@ Override any value with `TEST_DB_*` environment variables:
 
 The [`specification/`](/specification/) folder includes the following:
 
-1. Original `PROBLEM-STATEMENT`.
+1. Original [`PROBLEM-STATEMENT`](/specification/PROBLEM-STATEMENT.md).
 
-1. My original prompt `SPECIFICATION` to Claude.
+1. My original prompt [`SPECIFICATION`](/specification/SPECIFICATION.md) to Claude.
 
-1. The Claude-generated workplan `CLAUDE`.
+1. The Claude-generated [`CLAUDE`](/specification/CLAUDE.md) workplan.
 
-1. My `WORKLOG` of tasks completed and time spent.
+1. My [`WORKLOG`](/specification/WORKLOG.md) of tasks completed and time spent.
 
 ## Initial Commit
 

@@ -38,10 +38,14 @@
 
 ## Monday, May 4, 2026
 
-10:00 am - 11:00 am CDT (60 minutes)
+10:00 am - 11:30 am CDT (1.5 hrs)
 
 - Update filter endpoint to enable filtering for multiple Pokemon parameters.
 
 - Update README.  Add table of contents.  Create `/specification` folder to organize documents.
 
-- Test locally.
+- Update Swagger documentation for more search filters.
+
+- Test Swagger UI.
+
+- Unit and integration tests pass.
