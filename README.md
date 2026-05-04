@@ -32,7 +32,7 @@ Monday, May 4, 2026
 
 **PostgreSQL** — The Pokemon data has well-defined relationships (types, attacks, evolutions) that map cleanly to a normalized relational schema. Filtering by type, for example, is efficient with a junction table and a simple JOIN, whereas a document store would require scanning arrays. The connection is abstracted behind a `Config` struct so the driver can be swapped for a cloud-managed PostgreSQL instance (AWS RDS, Google Cloud SQL, IBM Cloud databases) by changing environment variables alone.
 
-**Architecture** — Layered (hexagonal) design with three layers:
+**Architecture** — Hexagonal (ports and adapters) design with three layers:
 - **Domain** (`internal/pokemon`) — models, repository interface, and service. No database or HTTP imports.
 - **Infrastructure** (`internal/repository`) — PostgreSQL implementation of the repository interface.
 - **Delivery** (`internal/handler`) — HTTP handlers, request/response DTOs, and route registration.
