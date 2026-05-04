@@ -127,7 +127,7 @@ const docTemplate = `{
         },
         "/pokemons": {
             "get": {
-                "description": "Returns a paginated list of Pokemon. Supports filtering by name (partial match) and type.",
+                "description": "Returns a paginated list of Pokemon. All filters are combinable.",
                 "produces": [
                     "application/json"
                 ],
@@ -146,6 +146,54 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Filter by type (e.g. Fire, Water)",
                         "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by weakness (e.g. Fire, Water)",
+                        "name": "weakness",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by resistance (e.g. Fire, Water)",
+                        "name": "resistant",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Minimum flee rate (0–1)",
+                        "name": "fleeRateMin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Maximum flee rate (0–1)",
+                        "name": "fleeRateMax",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Minimum weight in kg",
+                        "name": "weightMin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Maximum weight in kg",
+                        "name": "weightMax",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Minimum height in m",
+                        "name": "heightMin",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Maximum height in m",
+                        "name": "heightMax",
                         "in": "query"
                     },
                     {

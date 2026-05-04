@@ -191,8 +191,7 @@ paths:
       - favorites
   /pokemons:
     get:
-      description: Returns a paginated list of Pokemon. Supports filtering by name
-        (partial match) and type.
+      description: Returns a paginated list of Pokemon. All filters are combinable.
       parameters:
       - description: Filter by name (partial, case-insensitive)
         in: query
@@ -202,6 +201,38 @@ paths:
         in: query
         name: type
         type: string
+      - description: Filter by weakness (e.g. Fire, Water)
+        in: query
+        name: weakness
+        type: string
+      - description: Filter by resistance (e.g. Fire, Water)
+        in: query
+        name: resistant
+        type: string
+      - description: Minimum flee rate (0–1)
+        in: query
+        name: fleeRateMin
+        type: number
+      - description: Maximum flee rate (0–1)
+        in: query
+        name: fleeRateMax
+        type: number
+      - description: Minimum weight in kg
+        in: query
+        name: weightMin
+        type: number
+      - description: Maximum weight in kg
+        in: query
+        name: weightMax
+        type: number
+      - description: Minimum height in m
+        in: query
+        name: heightMin
+        type: number
+      - description: Maximum height in m
+        in: query
+        name: heightMax
+        type: number
       - description: Page number (default 1)
         in: query
         name: page

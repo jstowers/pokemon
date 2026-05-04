@@ -242,7 +242,19 @@ Interactive API documentation is available at:
 http://localhost:8080/swagger/index.html
 ```
 
-To regenerate Swagger docs after changing handler annotations:
+To regenerate Swagger docs after changing handler annotations, first install the `swag` CLI if you haven't already:
+
+```bash
+go install github.com/swaggo/swag/cmd/swag@latest
+```
+
+Add the Go bin directory to your PATH (add this line to `~/.zshrc` and then run `source ~/.zshrc`):
+
+```bash
+export PATH="$PATH:$(go env GOPATH)/bin"
+```
+
+Then regenerate the docs:
 
 ```bash
 swag init -g cmd/api/main.go --output docs
