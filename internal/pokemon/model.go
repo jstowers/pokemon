@@ -53,9 +53,17 @@ type EvolutionRequirement struct {
 
 // Filter holds optional query parameters for listing Pokemon.
 type Filter struct {
-	Name       string
-	Type       string
-	Favorite   *bool // nil = no filter, true = favorites only
+	Name        string
+	Type        string
+	Weakness    string
+	Resistant   string
+	FleeRateMin *float64
+	FleeRateMax *float64
+	WeightMin   *float64 // kg, compared against weight_min column
+	WeightMax   *float64 // kg, compared against weight_max column
+	HeightMin   *float64 // m, compared against height_min column
+	HeightMax   *float64 // m, compared against height_max column
+	Favorite    *bool    // nil = no filter, true = favorites only
 }
 
 // Page holds pagination parameters.

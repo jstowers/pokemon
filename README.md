@@ -19,7 +19,7 @@ The domain defines what it needs via the `Repository` interface. The infrastruct
 
 ### 1. Install Go
 
-Download and install [Go 1.24+](https://go.dev/dl/).
+Download and install [Go 1.24.4](https://go.dev/dl/) or newer.
 
 ### 2. Install PostgreSQL
 
@@ -40,6 +40,12 @@ You need a local PostgreSQL database to test the API.  You have two installation
     ```
 
 3. Open a new terminal window for the PATH change to take effect.
+
+4. You can check for a successful installation of these tools with the following commands:
+
+    ```bash
+
+    ```
 
 **Option B — Homebrew**
 
@@ -119,10 +125,34 @@ In a browser, open the following URL: http://localhost:8080/swagger/index.html
 | GET | `/pokemons` | List Pokemon (paginated) |
 | GET | `/pokemons?name=char` | Filter by name (partial, case-insensitive) |
 | GET | `/pokemons?type=Fire` | Filter by type |
+| GET | `/pokemons?weakness=Fire` | Filter by weakness |
+| GET | `/pokemons?resistant=Water` | Filter by resistance |
+| GET | `/pokemons?fleeRateMin=0.1&fleeRateMax=0.5` | Filter by flee rate range |
+| GET | `/pokemons?weightMin=5&weightMax=50` | Filter by weight range (kg) |
+| GET | `/pokemons?heightMin=0.5&heightMax=2.0` | Filter by height range (m) |
 | GET | `/pokemons?page=2&limit=10` | Pagination controls |
 | POST | `/favorites` | Add a Pokemon to favorites |
 | DELETE | `/favorites/{id}` | Remove a Pokemon from favorites |
 | GET | `/favorites` | List favorite Pokemon (paginated) |
+
+### Filter Parameters
+
+All filter parameters are optional and combinable in a single request.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `name` | string | Partial, case-insensitive name match |
+| `type` | string | Exact type match (e.g. `Fire`, `Water`, `Grass`) |
+| `weakness` | string | Exact weakness match |
+| `resistant` | string | Exact resistance match |
+| `fleeRateMin` | float | Minimum flee rate (0–1), inclusive |
+| `fleeRateMax` | float | Maximum flee rate (0–1), inclusive |
+| `weightMin` | float | Minimum weight in kg (compared against the Pokemon's minimum weight) |
+| `weightMax` | float | Maximum weight in kg (compared against the Pokemon's maximum weight) |
+| `heightMin` | float | Minimum height in m (compared against the Pokemon's minimum height) |
+| `heightMax` | float | Maximum height in m (compared against the Pokemon's maximum height) |
+| `page` | int | Page number (default `1`) |
+| `limit` | int | Results per page, max 100 (default `20`) |
 
 ### Example Requests
 
@@ -130,11 +160,20 @@ In a browser, open the following URL: http://localhost:8080/swagger/index.html
 # Get Bulbasaur (id 001)
 curl http://localhost:8080/pokemons/001
 
-# Search by name "char"
+# Search by name "char" — returns Charmander, Charmeleon, Charizard
 curl "http://localhost:8080/pokemons?name=char"
 
 # Filter by type "Fire"
 curl "http://localhost:8080/pokemons?type=Fire"
+
+# Fire-type Pokemon that are also weak to Water
+curl "http://localhost:8080/pokemons?type=Fire&weakness=Water"
+
+# Lightweight, fast-fleeing Pokemon — under 5 kg and flee rate above 0.15
+curl "http://localhost:8080/pokemons?weightMax=5&fleeRateMin=0.15"
+
+# Small Grass-type Pokemon resistant to Water — height under 1 m
+curl "http://localhost:8080/pokemons?type=Grass&resistant=Water&heightMax=1.0"
 
 # Add a favorite
 curl -X POST http://localhost:8080/favorites \
@@ -211,4 +250,4 @@ Wednesday, April 29, 2026
 
 ## Last Revision
 
-Sunday, May 3, 2026
+Monday, May 4, 2026

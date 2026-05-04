@@ -183,6 +183,129 @@ func TestList_TypeFilter(t *testing.T) {
 	}
 }
 
+func TestList_WeaknessFilter(t *testing.T) {
+	receivedFilter := pokemon.Filter{}
+	srv := newTestServer(&mockRepo{
+		list: func(_ context.Context, f pokemon.Filter, _ pokemon.Page) ([]*pokemon.Pokemon, error) {
+			receivedFilter = f
+			return []*pokemon.Pokemon{bulbasaur}, nil
+		},
+		count: func(_ context.Context, _ pokemon.Filter) (int, error) { return 1, nil },
+	})
+	defer srv.Close()
+
+	http.Get(srv.URL + "/pokemons?weakness=Fire")
+
+	if receivedFilter.Weakness != "Fire" {
+		t.Errorf("got filter.Weakness %q, want %q", receivedFilter.Weakness, "Fire")
+	}
+}
+
+func TestList_ResistantFilter(t *testing.T) {
+	receivedFilter := pokemon.Filter{}
+	srv := newTestServer(&mockRepo{
+		list: func(_ context.Context, f pokemon.Filter, _ pokemon.Page) ([]*pokemon.Pokemon, error) {
+			receivedFilter = f
+			return []*pokemon.Pokemon{bulbasaur}, nil
+		},
+		count: func(_ context.Context, _ pokemon.Filter) (int, error) { return 1, nil },
+	})
+	defer srv.Close()
+
+	http.Get(srv.URL + "/pokemons?resistant=Water")
+
+	if receivedFilter.Resistant != "Water" {
+		t.Errorf("got filter.Resistant %q, want %q", receivedFilter.Resistant, "Water")
+	}
+}
+
+func TestList_FleeRateFilter(t *testing.T) {
+	receivedFilter := pokemon.Filter{}
+	srv := newTestServer(&mockRepo{
+		list: func(_ context.Context, f pokemon.Filter, _ pokemon.Page) ([]*pokemon.Pokemon, error) {
+			receivedFilter = f
+			return []*pokemon.Pokemon{bulbasaur}, nil
+		},
+		count: func(_ context.Context, _ pokemon.Filter) (int, error) { return 1, nil },
+	})
+	defer srv.Close()
+
+	http.Get(srv.URL + "/pokemons?fleeRateMin=0.1&fleeRateMax=0.5")
+
+	if receivedFilter.FleeRateMin == nil || *receivedFilter.FleeRateMin != 0.1 {
+		t.Errorf("got filter.FleeRateMin %v, want 0.1", receivedFilter.FleeRateMin)
+	}
+	if receivedFilter.FleeRateMax == nil || *receivedFilter.FleeRateMax != 0.5 {
+		t.Errorf("got filter.FleeRateMax %v, want 0.5", receivedFilter.FleeRateMax)
+	}
+}
+
+func TestList_WeightFilter(t *testing.T) {
+	receivedFilter := pokemon.Filter{}
+	srv := newTestServer(&mockRepo{
+		list: func(_ context.Context, f pokemon.Filter, _ pokemon.Page) ([]*pokemon.Pokemon, error) {
+			receivedFilter = f
+			return []*pokemon.Pokemon{bulbasaur}, nil
+		},
+		count: func(_ context.Context, _ pokemon.Filter) (int, error) { return 1, nil },
+	})
+	defer srv.Close()
+
+	http.Get(srv.URL + "/pokemons?weightMin=5&weightMax=50")
+
+	if receivedFilter.WeightMin == nil || *receivedFilter.WeightMin != 5 {
+		t.Errorf("got filter.WeightMin %v, want 5", receivedFilter.WeightMin)
+	}
+	if receivedFilter.WeightMax == nil || *receivedFilter.WeightMax != 50 {
+		t.Errorf("got filter.WeightMax %v, want 50", receivedFilter.WeightMax)
+	}
+}
+
+func TestList_HeightFilter(t *testing.T) {
+	receivedFilter := pokemon.Filter{}
+	srv := newTestServer(&mockRepo{
+		list: func(_ context.Context, f pokemon.Filter, _ pokemon.Page) ([]*pokemon.Pokemon, error) {
+			receivedFilter = f
+			return []*pokemon.Pokemon{bulbasaur}, nil
+		},
+		count: func(_ context.Context, _ pokemon.Filter) (int, error) { return 1, nil },
+	})
+	defer srv.Close()
+
+	http.Get(srv.URL + "/pokemons?heightMin=0.5&heightMax=2.0")
+
+	if receivedFilter.HeightMin == nil || *receivedFilter.HeightMin != 0.5 {
+		t.Errorf("got filter.HeightMin %v, want 0.5", receivedFilter.HeightMin)
+	}
+	if receivedFilter.HeightMax == nil || *receivedFilter.HeightMax != 2.0 {
+		t.Errorf("got filter.HeightMax %v, want 2.0", receivedFilter.HeightMax)
+	}
+}
+
+func TestList_CombinedFilters(t *testing.T) {
+	receivedFilter := pokemon.Filter{}
+	srv := newTestServer(&mockRepo{
+		list: func(_ context.Context, f pokemon.Filter, _ pokemon.Page) ([]*pokemon.Pokemon, error) {
+			receivedFilter = f
+			return []*pokemon.Pokemon{bulbasaur}, nil
+		},
+		count: func(_ context.Context, _ pokemon.Filter) (int, error) { return 1, nil },
+	})
+	defer srv.Close()
+
+	http.Get(srv.URL + "/pokemons?type=Grass&weakness=Fire&fleeRateMax=0.1")
+
+	if receivedFilter.Type != "Grass" {
+		t.Errorf("got filter.Type %q, want Grass", receivedFilter.Type)
+	}
+	if receivedFilter.Weakness != "Fire" {
+		t.Errorf("got filter.Weakness %q, want Fire", receivedFilter.Weakness)
+	}
+	if receivedFilter.FleeRateMax == nil || *receivedFilter.FleeRateMax != 0.1 {
+		t.Errorf("got filter.FleeRateMax %v, want 0.1", receivedFilter.FleeRateMax)
+	}
+}
+
 func TestList_DefaultPagination(t *testing.T) {
 	receivedPage := pokemon.Page{}
 	srv := newTestServer(&mockRepo{

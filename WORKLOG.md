@@ -35,3 +35,11 @@
 - Test API
 
 - Begin Claude prompts for adding integration tests against a local Pokemon database.
+
+## Monday, May 4, 2026
+
+10:00 am - 11:00 am CDT (60 minutes)
+
+- Update filter endpoint to enable filtering for multiple Pokemon parameters.
+
+- Test locally.

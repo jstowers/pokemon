@@ -295,33 +295,7 @@ func (r *PostgresPokemonRepository) collectRows(ctx context.Context, rows *sql.R
 
 // buildListQuery constructs a SELECT with optional WHERE clauses.
 func buildListQuery(filter pokemon.Filter, page pokemon.Page) (string, []any) {
-	var (
-		where []string
-		args  []any
-		n     = 1
-	)
-
-	base := `
-		SELECT DISTINCT p.id, p.name, p.classification, p.flee_rate, p.max_cp, p.max_hp,
-		       p.weight_min, p.weight_max, p.height_min, p.height_max, p.pokemon_class
-		FROM pokemons p`
-
-	if filter.Type != "" {
-		base += ` INNER JOIN pokemon_types pt ON pt.pokemon_id = p.id`
-		where = append(where, fmt.Sprintf("pt.type_name = $%d", n))
-		args = append(args, filter.Type)
-		n++
-	}
-
-	if filter.Name != "" {
-		where = append(where, fmt.Sprintf("LOWER(p.name) LIKE LOWER($%d)", n))
-		args = append(args, "%"+filter.Name+"%")
-		n++
-	}
-
-	if filter.Favorite != nil && *filter.Favorite {
-		base += ` INNER JOIN favorites f ON f.pokemon_id = p.id`
-	}
+	base, where, args, n := buildFilterBase(filter)
 
 	q := base
 	if len(where) > 0 {
@@ -334,31 +308,94 @@ func buildListQuery(filter pokemon.Filter, page pokemon.Page) (string, []any) {
 }
 
 func buildCountQuery(filter pokemon.Filter) (string, []any) {
-	var (
-		where []string
-		args  []any
-		n     = 1
-	)
+	_, where, args, _ := buildFilterBase(filter)
 
 	base := `SELECT COUNT(DISTINCT p.id) FROM pokemons p`
+	base += buildFilterJoins(filter)
 
-	if filter.Type != "" {
-		base += ` INNER JOIN pokemon_types pt ON pt.pokemon_id = p.id`
-		where = append(where, fmt.Sprintf("pt.type_name = $%d", n))
-		args = append(args, filter.Type)
-		n++
-	}
-
-	if filter.Name != "" {
-		where = append(where, fmt.Sprintf("LOWER(p.name) LIKE LOWER($%d)", n))
-		args = append(args, "%"+filter.Name+"%")
-		n++
-	}
-
-	_ = n
 	q := base
 	if len(where) > 0 {
 		q += " WHERE " + strings.Join(where, " AND ")
 	}
 	return q, args
+}
+
+// buildFilterBase returns the SELECT base with joins, WHERE clauses, args, and next param index.
+func buildFilterBase(filter pokemon.Filter) (base string, where []string, args []any, n int) {
+	n = 1
+	base = `
+		SELECT DISTINCT p.id, p.name, p.classification, p.flee_rate, p.max_cp, p.max_hp,
+		       p.weight_min, p.weight_max, p.height_min, p.height_max, p.pokemon_class
+		FROM pokemons p`
+	base += buildFilterJoins(filter)
+
+	if filter.Type != "" {
+		where = append(where, fmt.Sprintf("pt.type_name = $%d", n))
+		args = append(args, filter.Type)
+		n++
+	}
+	if filter.Weakness != "" {
+		where = append(where, fmt.Sprintf("pw.type_name = $%d", n))
+		args = append(args, filter.Weakness)
+		n++
+	}
+	if filter.Resistant != "" {
+		where = append(where, fmt.Sprintf("pr.type_name = $%d", n))
+		args = append(args, filter.Resistant)
+		n++
+	}
+	if filter.Name != "" {
+		where = append(where, fmt.Sprintf("LOWER(p.name) LIKE LOWER($%d)", n))
+		args = append(args, "%"+filter.Name+"%")
+		n++
+	}
+	if filter.FleeRateMin != nil {
+		where = append(where, fmt.Sprintf("p.flee_rate >= $%d", n))
+		args = append(args, *filter.FleeRateMin)
+		n++
+	}
+	if filter.FleeRateMax != nil {
+		where = append(where, fmt.Sprintf("p.flee_rate <= $%d", n))
+		args = append(args, *filter.FleeRateMax)
+		n++
+	}
+	if filter.WeightMin != nil {
+		where = append(where, fmt.Sprintf("CAST(REGEXP_REPLACE(p.weight_min, '[^0-9.]', '', 'g') AS DECIMAL) >= $%d", n))
+		args = append(args, *filter.WeightMin)
+		n++
+	}
+	if filter.WeightMax != nil {
+		where = append(where, fmt.Sprintf("CAST(REGEXP_REPLACE(p.weight_max, '[^0-9.]', '', 'g') AS DECIMAL) <= $%d", n))
+		args = append(args, *filter.WeightMax)
+		n++
+	}
+	if filter.HeightMin != nil {
+		where = append(where, fmt.Sprintf("CAST(REGEXP_REPLACE(p.height_min, '[^0-9.]', '', 'g') AS DECIMAL) >= $%d", n))
+		args = append(args, *filter.HeightMin)
+		n++
+	}
+	if filter.HeightMax != nil {
+		where = append(where, fmt.Sprintf("CAST(REGEXP_REPLACE(p.height_max, '[^0-9.]', '', 'g') AS DECIMAL) <= $%d", n))
+		args = append(args, *filter.HeightMax)
+		n++
+	}
+	return base, where, args, n
+}
+
+// buildFilterJoins returns the JOIN clauses required by the active filters.
+func buildFilterJoins(filter pokemon.Filter) string {
+	var joins string
+	if filter.Type != "" {
+		joins += ` INNER JOIN pokemon_types pt ON pt.pokemon_id = p.id`
+	}
+	if filter.Weakness != "" {
+		joins += ` INNER JOIN pokemon_weaknesses pw ON pw.pokemon_id = p.id`
+	}
+	if filter.Resistant != "" {
+		joins += ` INNER JOIN pokemon_resistant pr ON pr.pokemon_id = p.id`
+	}
+	if filter.Favorite != nil && *filter.Favorite {
+		joins += ` INNER JOIN favorites f ON f.pokemon_id = p.id`
+	}
+	return joins
 }

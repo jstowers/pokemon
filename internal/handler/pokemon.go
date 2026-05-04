@@ -9,6 +9,18 @@ import (
 	"github.com/jstowers/pokemon/internal/pokemon"
 )
 
+func parseFloatParam(r *http.Request, key string) *float64 {
+	s := r.URL.Query().Get(key)
+	if s == "" {
+		return nil
+	}
+	v, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return nil
+	}
+	return &v
+}
+
 // Handler holds dependencies for all HTTP handlers.
 type Handler struct {
 	svc *pokemon.Service
@@ -115,19 +127,35 @@ func (h *Handler) GetByID(w http.ResponseWriter, r *http.Request) {
 // List godoc
 //
 //	@Summary		List Pokemon
-//	@Description	Returns a paginated list of Pokemon. Supports filtering by name (partial match) and type.
+//	@Description	Returns a paginated list of Pokemon. All filters are combinable.
 //	@Tags			pokemon
 //	@Produce		json
-//	@Param			name	query		string	false	"Filter by name (partial, case-insensitive)"
-//	@Param			type	query		string	false	"Filter by type (e.g. Fire, Water)"
-//	@Param			page	query		int		false	"Page number (default 1)"
-//	@Param			limit	query		int		false	"Results per page, max 100 (default 20)"
-//	@Success		200		{object}	ListResponse
+//	@Param			name			query		string	false	"Filter by name (partial, case-insensitive)"
+//	@Param			type			query		string	false	"Filter by type (e.g. Fire, Water)"
+//	@Param			weakness		query		string	false	"Filter by weakness (e.g. Fire, Water)"
+//	@Param			resistant		query		string	false	"Filter by resistance (e.g. Fire, Water)"
+//	@Param			fleeRateMin		query		number	false	"Minimum flee rate (0–1)"
+//	@Param			fleeRateMax		query		number	false	"Maximum flee rate (0–1)"
+//	@Param			weightMin		query		number	false	"Minimum weight in kg"
+//	@Param			weightMax		query		number	false	"Maximum weight in kg"
+//	@Param			heightMin		query		number	false	"Minimum height in m"
+//	@Param			heightMax		query		number	false	"Maximum height in m"
+//	@Param			page			query		int		false	"Page number (default 1)"
+//	@Param			limit			query		int		false	"Results per page, max 100 (default 20)"
+//	@Success		200				{object}	ListResponse
 //	@Router			/pokemons [get]
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	filter := pokemon.Filter{
-		Name: r.URL.Query().Get("name"),
-		Type: r.URL.Query().Get("type"),
+		Name:        r.URL.Query().Get("name"),
+		Type:        r.URL.Query().Get("type"),
+		Weakness:    r.URL.Query().Get("weakness"),
+		Resistant:   r.URL.Query().Get("resistant"),
+		FleeRateMin: parseFloatParam(r, "fleeRateMin"),
+		FleeRateMax: parseFloatParam(r, "fleeRateMax"),
+		WeightMin:   parseFloatParam(r, "weightMin"),
+		WeightMax:   parseFloatParam(r, "weightMax"),
+		HeightMin:   parseFloatParam(r, "heightMin"),
+		HeightMax:   parseFloatParam(r, "heightMax"),
 	}
 
 	page, limit := parsePagination(r)
