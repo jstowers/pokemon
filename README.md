@@ -104,7 +104,7 @@ In a folder of your choosing, run the following command to clone this repo:
 git clone https://github.com/jstowers/pokemon.git
 ```
 
-```
+```bash
 cd pokemon
 ```
 
