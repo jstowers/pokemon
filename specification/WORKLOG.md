@@ -42,4 +42,6 @@
 
 - Update filter endpoint to enable filtering for multiple Pokemon parameters.
 
+- Update README.  Add table of contents.  Create `/specification` folder to organize documents.
+
 - Test locally.

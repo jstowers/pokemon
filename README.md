@@ -296,9 +296,9 @@ The [`specification/`](/specification/) folder includes the following:
 
 1. Original `PROBLEM-STATEMENT`.
 
-1. My original prompt `SPECIFICATION` to Claude
+1. My original prompt `SPECIFICATION` to Claude.
 
-1. The Claude-generated workplan `CLAUDE`
+1. The Claude-generated workplan `CLAUDE`.
 
 1. My `WORKLOG` of tasks completed and time spent.
 
