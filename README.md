@@ -2,6 +2,30 @@
 
 A REST API for browsing Generation I Pokemon and adding favorites, built with Go and PostgreSQL.
 
+Joseph Stowers
+
+Monday, May 4, 2026
+
+## Table of Contents
+
+[Technology Choices](#technology-choices)
+
+[Prerequisites](#prerequisites)
+
+[Build and Run](#build-and-run)
+
+[API Endpoints](#api-endpoints)
+
+[Swagger UI](#swagger-ui)
+
+[Unit and Integration Tests](#unit-and-integration-tests)
+
+[Reference](#reference)
+
+[Initial Commit](#initial-commit)
+
+[Last Revision](#last-revision)
+
 ## Technology Choices
 
 **Go** — Chosen for its strong standard library, idiomatic HTTP support (net/http), and the explicit, readable style it encourages. The codebase follows [Effective Go](https://go.dev/doc/effective_go) conventions.
@@ -41,11 +65,27 @@ You need a local PostgreSQL database to test the API.  You have two installation
 
 3. Open a new terminal window for the PATH change to take effect.
 
-4. You can check for a successful installation of these tools with the following commands:
+4. Check for a successful installation of these tools with the following commands:
 
     ```bash
-
+    # show version
+    createdb --version
     ```
+
+    ```bash
+    # show executable PATH
+    which createdb
+    ```
+
+    ```bash
+    # show version
+    psql --version
+    ```
+
+    ```bash
+    # show executable PATH
+    which psql
+    ``` 
 
 **Option B — Homebrew**
 
@@ -67,7 +107,6 @@ git clone https://github.com/jstowers/pokemon.git
 ```
 cd pokemon
 ```
-
 
 ## Build and Run
 
@@ -101,7 +140,7 @@ Open `.env.dev` and set your PostgreSQL credentials for `DB_USER` and `DB_PASSWO
 
 ### 3. Seed the database
 
-Read `data/pokemons.json`, create all tables, and insert all 151 Pokemon in a single transaction:
+Reads `data/pokemons.json`, creates all tables, and inserts all 151 Pokemon in a single transaction:
 
 ```bash
 go run ./cmd/seed
@@ -117,6 +156,8 @@ go run ./cmd/api
 
 In a browser, open the following URL: http://localhost:8080/swagger/index.html
 
+![swagger-pokemon-api](/image/swagger-pokemon-api.png)
+
 ## API Endpoints
 
 | Method | Path | Description |
@@ -124,11 +165,6 @@ In a browser, open the following URL: http://localhost:8080/swagger/index.html
 | GET | `/pokemons/{id}` | Get a Pokemon by ID (e.g. `001`) |
 | GET | `/pokemons` | List Pokemon (paginated) |
 | GET | `/pokemons?name=char` | Filter by name (partial, case-insensitive) |
-| GET | `/pokemons?type=Fire` | Filter by type |
-| GET | `/pokemons?weakness=Fire` | Filter by weakness |
-| GET | `/pokemons?resistant=Water` | Filter by resistance |
-| GET | `/pokemons?fleeRateMin=0.1&fleeRateMax=0.5` | Filter by flee rate range |
-| GET | `/pokemons?weightMin=5&weightMax=50` | Filter by weight range (kg) |
 | GET | `/pokemons?heightMin=0.5&heightMax=2.0` | Filter by height range (m) |
 | GET | `/pokemons?page=2&limit=10` | Pagination controls |
 | POST | `/favorites` | Add a Pokemon to favorites |
@@ -137,7 +173,7 @@ In a browser, open the following URL: http://localhost:8080/swagger/index.html
 
 ### Filter Parameters
 
-All filter parameters are optional and combinable in a single request.
+The `pokemons/` endpoint supports flexible filtering with optional, combinable query parameters.
 
 | Parameter | Type | Description |
 |---|---|---|
@@ -153,6 +189,16 @@ All filter parameters are optional and combinable in a single request.
 | `heightMax` | float | Maximum height in m (compared against the Pokemon's maximum height) |
 | `page` | int | Page number (default `1`) |
 | `limit` | int | Results per page, max 100 (default `20`) |
+
+### Example Filter Requests
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/pokemons?type=Fire` | Filter by type |
+| GET | `/pokemons?weakness=Fire` | Filter by weakness |
+| GET | `/pokemons?resistant=Water` | Filter by resistance |
+| GET | `/pokemons?fleeRateMin=0.1&fleeRateMax=0.5` | Filter by flee rate range |
+| GET | `/pokemons?weightMin=5&weightMax=50` | Filter by weight range (kg) |
 
 ### Example Requests
 
@@ -201,7 +247,7 @@ To regenerate Swagger docs after changing handler annotations:
 swag init -g cmd/api/main.go --output docs
 ```
 
-## Running Tests
+## Unit and Integration Tests
 
 ### Unit tests (no database required)
 
@@ -243,6 +289,18 @@ Override any value with `TEST_DB_*` environment variables:
   ```bash
   TEST_DB_USER=myuser TEST_DB_PASSWORD=secret go test ./internal/repository/... -tags integration
   ```
+
+## Reference
+
+The [`specification/`](/specification/) folder includes the following:
+
+1. Original `PROBLEM-STATEMENT`.
+
+1. My original prompt `SPECIFICATION` to Claude
+
+1. The Claude-generated workplan `CLAUDE`
+
+1. My `WORKLOG` of tasks completed and time spent.
 
 ## Initial Commit
 
