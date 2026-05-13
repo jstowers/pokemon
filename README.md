@@ -8,23 +8,15 @@ Monday, May 4, 2026
 
 ## Table of Contents
 
-[Technology Choices](#technology-choices)
-
-[Prerequisites](#prerequisites)
-
-[Build and Run](#build-and-run)
-
-[API Endpoints](#api-endpoints)
-
-[Swagger UI](#swagger-ui)
-
-[Unit and Integration Tests](#unit-and-integration-tests)
-
-[Reference](#reference)
-
-[Initial Commit](#initial-commit)
-
-[Last Revision](#last-revision)
+- [Technology Choices](#technology-choices)
+- [Prerequisites](#prerequisites)
+- [Build and Run](#build-and-run)
+- [API Endpoints](#api-endpoints)
+- [Swagger UI](#swagger-ui)
+- [Unit and Integration Tests](#unit-and-integration-tests)
+- [Reference](#reference)
+- [Initial Commit](#initial-commit)
+- [Last Revision](#last-revision)
 
 ## Technology Choices
 
@@ -32,12 +24,27 @@ Monday, May 4, 2026
 
 **PostgreSQL** — The Pokemon data has well-defined relationships (types, attacks, evolutions) that map cleanly to a normalized relational schema. Filtering by type, for example, is efficient with a junction table and a simple JOIN, whereas a document store would require scanning arrays. The connection is abstracted behind a `Config` struct so the driver can be swapped for a cloud-managed PostgreSQL instance (AWS RDS, Google Cloud SQL, IBM Cloud databases) by changing environment variables alone.
 
-**Architecture** — Hexagonal (ports and adapters) design with three layers:
-- **Domain** (`internal/pokemon`) — models, repository interface, and service. No database or HTTP imports.
-- **Infrastructure** (`internal/repository`) — PostgreSQL implementation of the repository interface.
-- **Delivery** (`internal/handler`) — HTTP handlers, request/response DTOs, and route registration.
+**Architecture**
 
-The domain defines what it needs via the `Repository` interface. The infrastructure and delivery layers depend on the domain; the domain depends on nothing outside itself. This makes the business logic independently testable without a running database.
+This project uses a classic three-layer stack to process each API request:
+
+1. __Handler__ (`internal/handler`) - parse HTTP request, write HTTP response, route registration
+
+2. __Service__ (`internal/pokemon/`) - business logic, domain errors
+
+3. __Repository__ (`internal/repository`) - SQL queries, data mapping
+
+The three layers are wired in `main.go`:
+
+```go
+	repo := repository.New(database)
+	svc := pokemon.NewService(repo)
+	h := handler.New(svc)
+```
+
+The `service` owns all business logic by orchestrating multi-repository calls and enforcing business rules.  For instance, a Pokemon must exist and not already be favorited before `AddFavorite` writes to the database.
+
+The `service` depends on the `Repository` interface, not any concrete database implementation.  It also does not import any HTTP packages.  This makes the service independently testable against a mock repository.
 
 ## Prerequisites
 
@@ -323,4 +330,4 @@ Wednesday, April 29, 2026
 
 ## Last Revision
 
-Monday, May 4, 2026
+Wednesday, May 13, 2026
